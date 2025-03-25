@@ -5,27 +5,27 @@ import { authMiddleware } from "../middlewares/AuthMiddleware";
 const router = Router();
 
 // Public routes
-router.get("/event-ratings", UserEventRateController.getAllRatings);
-router.get("/get-event-ratings/:id", UserEventRateController.getRatingById);
+router.get("/", UserEventRateController.getAllRatings);
+router.get("/:id", UserEventRateController.getRatingById);
 router.get(
-  "/event-ratings/event/:eventId",
+  "/event/:eventId",
   UserEventRateController.getRatingsByEventId
 );
 router.get(
-  "/event-ratings/event/:eventId/average",
+  "/event/:eventId/average",
   UserEventRateController.getEventAverageRating
 );
 
 // Protected routes (memerlukan autentikasi)
 router.use(authMiddleware);
 router.get(
-  "/event-ratings/user/:userId",
+  "/user/:userId",
   UserEventRateController.getRatingsByUserId
 );
-router.post("/event-ratings/join", UserEventRateController.joinEvent);
-router.put("/event-ratings/:id/rate", UserEventRateController.rateEvent);
+router.post("/join", UserEventRateController.joinEvent);
+router.put("/:id/rate", UserEventRateController.rateEvent);
 router.delete(
-  "/event-ratings/:id",
+  "/:id",
   UserEventRateController.cancelEventParticipation
 );
 

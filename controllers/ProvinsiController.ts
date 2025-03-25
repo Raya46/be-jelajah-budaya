@@ -2,11 +2,12 @@ import type { Request, Response } from "express";
 import ProvinsiService from "../services/ProvinsiService";
 
 class ProvinsiController {
-  getProvinsi = async (res: Response) => {
+  getProvinsi = async (req: Request, res: Response) => {
     try {
       const provinsi = await ProvinsiService.getProvinsi();
       res.status(200).json({ message: "success", provinsi });
     } catch (error) {
+      console.error(error);
       res.status(500).json(error);
     }
   };

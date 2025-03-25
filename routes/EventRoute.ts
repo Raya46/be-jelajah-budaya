@@ -4,12 +4,12 @@ import { authMiddleware } from "../middlewares/AuthMiddleware";
 
 const router = Router();
 
-router.get("/events", EventController.getEvent);
-router.get("/events/:id", EventController.getEventById);
+router.get("/", EventController.getEvent);
+router.get("/:id", EventController.getEventById);
 
 router.use(authMiddleware);
-router.post("/events", EventController.createEvent);
-router.put("/events/:id", EventController.updateEvent);
-router.delete("/events/:id", EventController.deleteEvent);
+router.post("/", EventController.createEvent);
+router.put("/:id", EventController.updateEvent);
+router.delete("/:id", EventController.deleteEvent);
 
 export default router;

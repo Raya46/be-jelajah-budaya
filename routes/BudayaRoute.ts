@@ -3,10 +3,10 @@ import BudayaController from "../controllers/BudayaController";
 
 const router = Router();
 
-router.get("/budaya", BudayaController.getBudaya);
-router.get("/budaya/:id", BudayaController.getBudayaById);
+router.get("/", BudayaController.getBudaya);
+router.get("/:id", BudayaController.getBudayaById);
 router.post("/create-budaya", BudayaController.createBudaya);
-router.put("/budaya/:id", BudayaController.updateBudaya);
-router.delete("/budaya/:id", BudayaController.deleteBudaya);
+router.put("/:id", BudayaController.updateBudaya);
+router.delete("/:id", BudayaController.deleteBudaya);
 
 export default router;

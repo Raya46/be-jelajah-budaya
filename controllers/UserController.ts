@@ -5,7 +5,7 @@ class UserController {
   login = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
-      const { user, isPasswordValid, token, error, status } =
+      const { user, isPasswordValid, token, error } =
         await UserService.login(email, password);
 
       if (error) {
@@ -30,6 +30,15 @@ class UserController {
       res.status(500).json({ message: "error", error: error.message });
     }
   };
+
+  createAdminDaerah = async(req:Request, res:Response) => {
+    try {
+      const user = await UserService.createAdminDaerah(req)
+      res.status(201).json({message:"Admin daerah berhasil dibuat", user})
+    } catch (error:any) {
+      res.status(500).json({ message: "error", error: error.message });
+    }
+  }
 
   registerAdminDaerah = async (req: Request, res: Response) => {
     try {

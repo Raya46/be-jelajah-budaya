@@ -356,7 +356,7 @@ const userEventRatingPath = {
         },
       },
     },
-    "/get-event-ratings/:id": {
+    "/event-ratings/:id": {
       delete: {
         summary: "Membatalkan partisipasi event",
         tags: ["UserEventRating"],

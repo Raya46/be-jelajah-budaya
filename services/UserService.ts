@@ -41,6 +41,38 @@ class UserService {
     }
   };
 
+  createAdminDaerah = async(body:Request) => {
+    try {
+      const {
+        username,
+        email,
+        password,
+        alamat,
+        daerahId,
+      } = body.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          alamat,
+          role: "ADMIN_DAERAH",
+        },
+      });
+      const requestAdminDaerah = await prisma.requestAdminDaerah.create({
+        data: {
+          userId: user.id,
+          daerahId,
+        },
+      });
+
+      return { user, requestAdminDaerah };
+    } catch (error) {
+      
+    }
+  }
+
   registerAdminDaerah = async (body: Request) => {
     try {
       const {
