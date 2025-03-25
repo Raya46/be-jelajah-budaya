@@ -25,6 +25,13 @@ enum Status {
   REJECT
 }
 
+enum TypeBudaya {
+  TARIAN
+  KESENIAN_KERAJINAN
+  MAKANAN
+  PAKAIAN
+}
+
 model User {
   id                 Int                  @id @default(autoincrement())
   username           String
@@ -65,6 +72,7 @@ model Budaya {
   nama      String
   deskripsi String
   gambar    String?
+  typeBudaya TypeBudaya
   daerahId  Int
   daerah    Daerah   @relation(fields: [daerahId], references: [id])
   createdAt DateTime @default(now())

@@ -1,11 +1,22 @@
 import type { Request } from "express";
 import prisma from "../utils/database";
+import type { TypeBudaya } from "@prisma/client";
 
 class BudayaService {
-  getBudaya = async () => {
+  getBudaya = async (q:TypeBudaya) => {
     try {
-      const budaya = await prisma.budaya.findMany();
-      return budaya;
+      if(!q) {
+        const budaya = await prisma.budaya.findMany();
+        return budaya;
+      }
+      const budaya = await prisma.budaya.findMany({
+        where:{
+          typeBudaya: q
+        }
+      })
+
+      return budaya
+
     } catch (error) {
       console.error(error);
       throw error;
@@ -25,7 +36,7 @@ class BudayaService {
   };
 
   createBudaya = async (body: Request) => {
-    const { nama, deskripsi, gambar, daerahId } = body.body;
+    const { nama, deskripsi, gambar, daerahId, typeBudaya } = body.body;
     try {
       const budaya = await prisma.budaya.create({
         data: {
@@ -33,6 +44,7 @@ class BudayaService {
           deskripsi,
           gambar,
           daerahId: parseInt(daerahId),
+          typeBudaya
         },
       });
       return budaya;

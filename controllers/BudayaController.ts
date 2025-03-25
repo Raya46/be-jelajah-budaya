@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import BudayaService from "../services/BudayaService";
+import type { TypeBudaya } from "@prisma/client";
 
 class BudayaController {
   getBudaya = async (req: Request, res: Response) => {
     try {
-      const budaya = await BudayaService.getBudaya();
+      const budaya = await BudayaService.getBudaya(req.query.q as TypeBudaya);
       res.status(200).json({ message: "success", budaya });
     } catch (error) {
       res.status(500).json(error);
