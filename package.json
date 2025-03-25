@@ -2,6 +2,9 @@
   "name": "be-jelajah-budaya",
   "module": "index.ts",
   "type": "module",
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@prisma/client": "^6.5.0",

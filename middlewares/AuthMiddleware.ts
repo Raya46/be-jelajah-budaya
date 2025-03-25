@@ -54,28 +54,24 @@ export const authMiddleware = async (
 };
 
 export const checkRole = (roles: string | string[]) => {
-  (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     const user = (req as any).user as authenticatedUser;
 
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
-    // Jika roles adalah array, cek apakah role user ada di dalamnya
-    if (Array.isArray(roles)) {
-      if (!roles.includes(user.role)) {
-        res.status(403).json({
-          message: "Forbidden - Insufficient permissions",
-        });
-      }
-    }
-    // Jika roles adalah string, cek apakah role user sama
-    else if (user.role !== roles) {
-      res.status(403).json({
-        message: "Forbidden - Insufficient permissions",
-      });
+    const userHasRole = Array.isArray(roles)
+      ? roles.includes(user.role)
+      : user.role === roles;
+
+    if (!userHasRole) {
+      res.status(403).json({ message: "Forbidden - Insufficient permissions" });
+      return;
     }
 
     next();
   };
 };
+
