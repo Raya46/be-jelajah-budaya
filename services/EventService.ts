@@ -20,13 +20,19 @@ class EventService {
     }
   };
 
-  createEvent = async (body: Request) => {
-    const { nama, gambar, deskripsi, tanggal, lokasi, daerahId } = body.body;
+  createEvent = async (req: Request) => {
+    const { nama, deskripsi, tanggal, lokasi, daerahId } = req.body;
+    const gambarPath = req.file?.path;
+
+    if (!gambarPath) {
+      throw new Error("Gambar event diperlukan");
+    }
+
     try {
       const event = await prisma.event.create({
         data: {
           nama,
-          gambar,
+          gambar: gambarPath,
           daerahId: parseInt(daerahId),
           deskripsi,
           tanggal,
@@ -40,21 +46,27 @@ class EventService {
     }
   };
 
-  updateEvent = async (id: string, body: Request) => {
-    const { nama, gambar, deskripsi, tanggal, lokasi, daerahId } = body.body;
+  updateEvent = async (id: string, req: Request) => {
+    const { nama, deskripsi, tanggal, lokasi, daerahId } = req.body;
+    const gambarPath = req.file?.path;
+    const dataToUpdate: any = {
+      nama,
+      daerahId: parseInt(daerahId),
+      deskripsi,
+      tanggal,
+      lokasi,
+    };
+
+    if (gambarPath) {
+      dataToUpdate.gambar = gambarPath;
+    }
+
     try {
       const event = await prisma.event.update({
         where: {
           id: parseInt(id),
         },
-        data: {
-          nama,
-          gambar,
-          daerahId: parseInt(daerahId),
-          deskripsi,
-          tanggal,
-          lokasi,
-        },
+        data: dataToUpdate,
       });
       return event;
     } catch (error) {

@@ -12,13 +12,19 @@ class DaerahService {
     }
   };
 
-  createDaerah = async (body: Request) => {
-    const { nama, gambar, provinsiId } = body.body;
+  createDaerah = async (req: Request) => {
+    const { nama, provinsiId } = req.body;
+    const gambarPath = req.file?.path;
+
+    if (!gambarPath) {
+      throw new Error("Gambar daerah diperlukan");
+    }
+
     try {
       const daerah = await prisma.daerah.create({
         data: {
           nama,
-          gambar,
+          gambar: gambarPath,
           provinsiId: parseInt(provinsiId),
         },
       });
@@ -29,18 +35,25 @@ class DaerahService {
     }
   };
 
-  updateDaerah = async (id: string, body: Request) => {
-    const { nama, gambar, provinsiId } = body.body;
+  updateDaerah = async (id: string, req: Request) => {
+    const { nama, provinsiId } = req.body;
+    const gambarPath = req.file?.path;
+    const dataToUpdate: { nama: string; provinsiId: number; gambar?: string } =
+      {
+        nama,
+        provinsiId: parseInt(provinsiId),
+      };
+
+    if (gambarPath) {
+      dataToUpdate.gambar = gambarPath;
+    }
+
     try {
       const daerah = await prisma.daerah.update({
         where: {
           id: parseInt(id),
         },
-        data: {
-          nama,
-          gambar,
-          provinsiId: parseInt(provinsiId),
-        },
+        data: dataToUpdate,
       });
       return daerah;
     } catch (error) {

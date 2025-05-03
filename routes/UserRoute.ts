@@ -1,14 +1,18 @@
 import { Router } from "express";
-import multer from "multer";
 import UserController from "../controllers/UserController";
-import { authMiddleware, checkRole } from "../middlewares/AuthMiddleware";
+import { authMiddleware } from "../middlewares/AuthMiddleware";
+import upload from "../middlewares/CloudinaryUploadMiddleware";
+import { checkRole } from "../middlewares/checkRole";
+import { Role } from "@prisma/client";
 
 const router = Router();
-const upload = multer({ dest: "uploads/" });
 
 // Public routes
+// @ts-ignore
 router.post("/login", UserController.login);
+// @ts-ignore
 router.post("/register-user", UserController.registerUser);
+// @ts-ignore
 router.post(
   "/register-admin",
   upload.fields([
@@ -19,35 +23,62 @@ router.post(
 );
 
 // Protected routes
-router.use(authMiddleware);
-
-// Routes untuk SUPER_ADMIN
-router.post("/create-admin", 
-  checkRole("SUPER_ADMIN"),
-  UserController.createAdminDaerah);
-router.get("/", 
-  checkRole('SUPER_ADMIN'), 
-  UserController.getAllUsers);
 
 router.post(
-  "/admin",
+  "/create-admin",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  // Ganti handler ke UserController.createAdmin
+  UserController.createAdmin
+);
+router.get(
+  "/",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  // @ts-ignore
+  UserController.getAllUsers
+);
+
+router.get(
+  "/regular",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  // @ts-ignore
+  UserController.getRegularUsers
+);
+
+router.get(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  // @ts-ignore
+  UserController.getUserById
+);
+
+router.put(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
   upload.fields([
     { name: "ktp", maxCount: 1 },
     { name: "portofolio", maxCount: 1 },
   ]),
-  UserController.registerAdminDaerah
+  // @ts-ignore
+  UserController.updateUser
 );
 
-// Routes untuk SUPER_ADMIN dan ADMIN_DAERAH
-router.get("/regular", 
-  checkRole(["SUPER_ADMIN","ADMIN_DAERAH"]),
-  UserController.getRegularUsers);
-
-// Routes untuk SUPER_ADMIN (semua user) dan ADMIN_DAERAH (hanya user biasa)
-router.get("/:id", checkRole(["SUPER_ADMIN","ADMIN_DAERAH"]), UserController.getUserById);
-
-router.put("/:id", checkRole(["SUPER_ADMIN","ADMIN_DAERAH"]), UserController.updateUser);
-
-router.delete("/:id", checkRole(["SUPER_ADMIN","ADMIN_DAERAH"]), UserController.deleteUser);
+router.delete(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  // @ts-ignore
+  UserController.deleteUser
+);
 
 export default router;

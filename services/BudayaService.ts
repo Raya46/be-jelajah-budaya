@@ -3,20 +3,26 @@ import prisma from "../utils/database";
 import type { TypeBudaya } from "@prisma/client";
 
 class BudayaService {
-  getBudaya = async (q:TypeBudaya) => {
+  getBudaya = async (type?: TypeBudaya) => {
     try {
-      if(!q) {
-        const budaya = await prisma.budaya.findMany();
-        return budaya;
-      }
+      const whereClause = type ? { typeBudaya: type } : {};
+
       const budaya = await prisma.budaya.findMany({
-        where:{
-          typeBudaya: q
-        }
-      })
-
-      return budaya
-
+        where: whereClause,
+        include: {
+          daerah: {
+            select: {
+              nama: true,
+              provinsi: {
+                select: {
+                  nama: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return budaya;
     } catch (error) {
       console.error(error);
       throw error;
@@ -27,6 +33,18 @@ class BudayaService {
     try {
       const budaya = await prisma.budaya.findUnique({
         where: { id: parseInt(id) },
+        include: {
+          daerah: {
+            select: {
+              nama: true,
+              provinsi: {
+                select: {
+                  nama: true,
+                },
+              },
+            },
+          },
+        },
       });
       return budaya;
     } catch (error) {
@@ -35,16 +53,21 @@ class BudayaService {
     }
   };
 
-  createBudaya = async (body: Request) => {
-    const { nama, deskripsi, gambar, daerahId, typeBudaya } = body.body;
+  createBudaya = async (req: Request) => {
     try {
+      const { nama, deskripsi, daerahId, typeBudaya } = req.body;
+      if (!req.file) {
+        throw new Error("Gambar budaya diperlukan");
+      }
+      const gambarPath = req.file.path;
+
       const budaya = await prisma.budaya.create({
         data: {
           nama,
           deskripsi,
-          gambar,
+          gambar: gambarPath,
           daerahId: parseInt(daerahId),
-          typeBudaya
+          typeBudaya: typeBudaya as TypeBudaya,
         },
       });
       return budaya;
@@ -54,17 +77,27 @@ class BudayaService {
     }
   };
 
-  updateBudaya = async (id: string, body: Request) => {
-    const { nama, deskripsi, gambar, daerahId } = body.body;
+  updateBudaya = async (id: string, req: Request) => {
     try {
+      const { nama, deskripsi, daerahId, typeBudaya } = req.body;
+      const dataToUpdate: any = {
+        nama,
+        deskripsi,
+      };
+
+      if (daerahId) {
+        dataToUpdate.daerahId = parseInt(daerahId);
+      }
+      if (typeBudaya) {
+        dataToUpdate.typeBudaya = typeBudaya as TypeBudaya;
+      }
+      if (req.file) {
+        dataToUpdate.gambar = req.file.path;
+      }
+
       const budaya = await prisma.budaya.update({
         where: { id: parseInt(id) },
-        data: {
-          nama,
-          deskripsi,
-          gambar,
-          daerahId: parseInt(daerahId),
-        },
+        data: dataToUpdate,
       });
       return budaya;
     } catch (error) {

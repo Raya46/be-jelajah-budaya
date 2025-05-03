@@ -2,7 +2,6 @@ import type { Request } from "express";
 import prisma from "../utils/database";
 
 class UserEventRateService {
-  // Mendapatkan semua rating
   getAllRatings = async () => {
     try {
       const ratings = await prisma.userEventRating.findMany({
@@ -24,7 +23,6 @@ class UserEventRateService {
     }
   };
 
-  // Mendapatkan rating berdasarkan ID
   getRatingById = async (id: string) => {
     try {
       const rating = await prisma.userEventRating.findUnique({
@@ -47,7 +45,6 @@ class UserEventRateService {
     }
   };
 
-  // Mendapatkan rating berdasarkan user ID
   getRatingsByUserId = async (userId: string) => {
     try {
       const ratings = await prisma.userEventRating.findMany({
@@ -63,7 +60,6 @@ class UserEventRateService {
     }
   };
 
-  // Mendapatkan rating berdasarkan event ID
   getRatingsByEventId = async (eventId: string) => {
     try {
       const ratings = await prisma.userEventRating.findMany({
@@ -84,16 +80,12 @@ class UserEventRateService {
     }
   };
 
-  // User mengikuti event (membuat entri tanpa rating)
-  joinEvent = async (req: Request) => {
-    const { userId, eventId } = req.body;
-
+  joinEvent = async (userId: number, eventId: number) => {
     try {
-      // Cek apakah user sudah mengikuti event ini
       const existingRating = await prisma.userEventRating.findFirst({
         where: {
-          userId: parseInt(userId),
-          eventId: parseInt(eventId),
+          userId: userId,
+          eventId: eventId,
         },
       });
 
@@ -101,27 +93,24 @@ class UserEventRateService {
         throw new Error("User sudah mengikuti event ini");
       }
 
-      // Buat entri baru untuk user mengikuti event
       const userEvent = await prisma.userEventRating.create({
         data: {
-          userId: parseInt(userId),
-          eventId: parseInt(eventId),
+          userId: userId,
+          eventId: eventId,
         },
       });
 
       return userEvent;
     } catch (error) {
-      console.error(error);
+      console.error("Error joining event:", error);
       throw error;
     }
   };
 
-  // User memberikan rating dan review untuk event
   rateEvent = async (id: string, req: Request) => {
     const { rating, review } = req.body;
 
     try {
-      // Update rating dan review
       const updatedRating = await prisma.userEventRating.update({
         where: { id: parseInt(id) },
         data: {
@@ -137,7 +126,6 @@ class UserEventRateService {
     }
   };
 
-  // User membatalkan keikutsertaan dalam event
   cancelEventParticipation = async (id: string) => {
     try {
       const deletedRating = await prisma.userEventRating.delete({
@@ -151,7 +139,6 @@ class UserEventRateService {
     }
   };
 
-  // Mendapatkan rata-rata rating untuk suatu event
   getEventAverageRating = async (eventId: string) => {
     try {
       const ratings = await prisma.userEventRating.findMany({

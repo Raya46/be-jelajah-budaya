@@ -1,14 +1,41 @@
-import { Router } from "express";
+import { Router, type RequestHandler } from "express";
 import RequestController from "../controllers/RequestController";
 import { authMiddleware } from "../middlewares/AuthMiddleware";
+import { checkRole } from "../middlewares/checkRole";
+import { Role } from "@prisma/client";
 
 const router = Router();
 
-router.get("/",RequestController.getRequest);
-router.get("/:id",RequestController.getRequestById);
+router.get(
+  "/",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  // @ts-ignore
+  RequestController.getRequest
+);
+router.get(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  RequestController.getRequestById
+);
+router.put(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  // @ts-ignore
+  RequestController.updateRequest
+);
+router.delete(
+  "/:id",
+  // @ts-ignore
+  authMiddleware,
+  checkRole([Role.SUPER_ADMIN]),
+  // @ts-ignore
+  RequestController.deleteRequest
+);
 
-router.use(authMiddleware)
-router.put("/:id",RequestController.updateRequest)
-router.delete("/:id",RequestController.deleteRequest)
-
-export default router
+export default router;

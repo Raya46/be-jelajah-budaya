@@ -2,6 +2,13 @@ import bcrypt from "bcryptjs";
 import prisma from "../utils/database";
 import { generateToken } from "../utils/auth";
 import type { Request } from "express";
+import { Prisma, Role } from "@prisma/client";
+import type { User } from "@prisma/client";
+
+interface UploadedFiles {
+  ktp?: Express.Multer.File[];
+  portofolio?: Express.Multer.File[];
+}
 
 class UserService {
   login = async (email: string, password: string) => {
@@ -41,15 +48,9 @@ class UserService {
     }
   };
 
-  createAdminDaerah = async(body:Request) => {
+  createAdminDaerah = async (body: Request) => {
     try {
-      const {
-        username,
-        email,
-        password,
-        alamat,
-        daerahId,
-      } = body.body;
+      const { username, email, password, alamat, daerahId } = body.body;
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({
         data: {
@@ -60,67 +61,83 @@ class UserService {
           role: "ADMIN_DAERAH",
         },
       });
-      const requestAdminDaerah = await prisma.requestAdminDaerah.create({
-        data: {
-          userId: user.id,
-          daerahId,
-        },
-      });
 
-      return { user, requestAdminDaerah };
-    } catch (error) {
-      
-    }
-  }
-
-  registerAdminDaerah = async (body: Request) => {
-    try {
-      const {
-        username,
-        email,
-        password,
-        ktp,
-        portofolio,
-        alamat,
-        namaDaerah,
-        daerahId,
-      } = body.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await prisma.user.create({
-        data: {
-          username,
-          email,
-          password: hashedPassword,
-          ktp,
-          portofolio,
-          alamat,
-          role: "ADMIN_DAERAH",
-        },
-      });
-      if (namaDaerah) {
-        await prisma.requestAdminDaerah.create({
-          data: {
-            namaDaerah,
-            userId: user.id,
-            daerahId,
-          },
-        });
+      if (!daerahId) {
+        throw new Error("daerahId diperlukan untuk membuat admin daerah");
       }
+
       const requestAdminDaerah = await prisma.requestAdminDaerah.create({
         data: {
           userId: user.id,
-          daerahId,
+          daerahId: parseInt(daerahId),
         },
       });
 
-      return { user, requestAdminDaerah };
+      // Pilih field yang akan dikembalikan
+      const safeUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        alamat: user.alamat,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
+
+      return { user: safeUser, requestAdminDaerah };
     } catch (error) {
-      console.error(error);
+      console.error("Error creating admin daerah:", error);
       throw error;
     }
   };
 
-  // Mendapatkan semua user
+  registerAdminDaerah = async (req: Request) => {
+    try {
+      const { username, email, password, alamat, namaDaerah, daerahId } =
+        req.body;
+
+      const files = req.files as UploadedFiles;
+      const ktpPath = files?.ktp?.[0]?.path;
+      const portofolioPath = files?.portofolio?.[0]?.path;
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          ktp: ktpPath,
+          portofolio: portofolioPath,
+          alamat,
+          role: "ADMIN_DAERAH",
+        },
+      });
+
+      if (!daerahId && !namaDaerah) {
+        throw new Error(
+          "daerahId atau namaDaerah diperlukan untuk registrasi admin daerah"
+        );
+      }
+
+      let requestData: any = { userId: user.id };
+      if (daerahId) {
+        requestData.daerahId = parseInt(daerahId);
+      }
+      if (namaDaerah) {
+        requestData.namaDaerah = namaDaerah;
+      }
+
+      const requestAdminDaerah = await prisma.requestAdminDaerah.create({
+        data: requestData,
+      });
+
+      return { user, requestAdminDaerah };
+    } catch (error) {
+      console.error("Error registering admin daerah:", error);
+      throw error;
+    }
+  };
+
   getAllUsers = async () => {
     try {
       const users = await prisma.user.findMany({
@@ -141,7 +158,6 @@ class UserService {
     }
   };
 
-  // Mendapatkan user berdasarkan ID
   getUserById = async (id: string) => {
     try {
       const user = await prisma.user.findUnique({
@@ -165,23 +181,24 @@ class UserService {
     }
   };
 
-  // Mendapatkan user biasa saja (role USER)
   getRegularUsers = async () => {
     try {
-      const users = await prisma.user.findMany({
-        where: { role: "USER" },
+      return await prisma.user.findMany({
+        where: { role: Role.USER },
         select: {
           id: true,
           username: true,
           email: true,
+          role: true,
+          ktp: true,
           alamat: true,
+          portofolio: true,
           createdAt: true,
           updatedAt: true,
         },
       });
-      return users;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Error fetching regular users:", error);
       throw error;
     }
   };
@@ -196,14 +213,20 @@ class UserService {
         alamat,
       };
 
-      // Hanya SUPER_ADMIN yang bisa mengubah role
       if (role && (body as any).user.role === "SUPER_ADMIN") {
         userData.role = role;
       }
 
-      // Jika ada password baru
       if (body.body.password) {
         userData.password = await bcrypt.hash(body.body.password, 10);
+      }
+
+      const files = (body as any).files as UploadedFiles;
+      if (files?.ktp?.[0]?.path) {
+        userData.ktp = files.ktp[0].path;
+      }
+      if (files?.portofolio?.[0]?.path) {
+        userData.portofolio = files.portofolio[0].path;
       }
 
       const user = await prisma.user.update({
@@ -217,6 +240,8 @@ class UserService {
           alamat: true,
           createdAt: true,
           updatedAt: true,
+          ktp: true,
+          portofolio: true,
         },
       });
       return user;
@@ -226,10 +251,8 @@ class UserService {
     }
   };
 
-  // Hapus user
   deleteUser = async (id: string) => {
     try {
-      // Hapus semua data terkait user terlebih dahulu
       await prisma.requestAdminDaerah.deleteMany({
         where: { userId: parseInt(id) },
       });
@@ -238,7 +261,6 @@ class UserService {
         where: { userId: parseInt(id) },
       });
 
-      // Hapus user
       const user = await prisma.user.delete({
         where: { id: parseInt(id) },
       });

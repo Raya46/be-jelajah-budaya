@@ -12,13 +12,19 @@ class ProvinsiService {
     }
   };
 
-  createProvinsi = async (body: Request) => {
-    const { nama, gambar } = body.body;
+  createProvinsi = async (req: Request) => {
+    const { nama } = req.body;
+    const gambarPath = req.file?.path;
+
+    if (!gambarPath) {
+      throw new Error("Gambar provinsi diperlukan");
+    }
+
     try {
       const provinsi = await prisma.provinsi.create({
         data: {
           nama,
-          gambar,
+          gambar: gambarPath,
         },
       });
       return provinsi;
@@ -28,17 +34,21 @@ class ProvinsiService {
     }
   };
 
-  updateProvinsi = async (id: string, body: Request) => {
-    const { nama, gambar } = body.body;
+  updateProvinsi = async (id: string, req: Request) => {
+    const { nama } = req.body;
+    const gambarPath = req.file?.path;
+    const dataToUpdate: { nama: string; gambar?: string } = { nama };
+
+    if (gambarPath) {
+      dataToUpdate.gambar = gambarPath;
+    }
+
     try {
       const provinsi = await prisma.provinsi.update({
         where: {
           id: parseInt(id),
         },
-        data: {
-          nama,
-          gambar,
-        },
+        data: dataToUpdate,
       });
       return provinsi;
     } catch (error) {

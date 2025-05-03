@@ -19,7 +19,9 @@ export const authMiddleware = async (
     // Cek header Authorization
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      res.status(401).json({ message: "Unauthorized - No token provided" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized - No token provided" });
     }
 
     const token = authHeader?.split(" ")[1] as string;
@@ -31,47 +33,26 @@ export const authMiddleware = async (
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
+      select: { id: true, role: true, username: true, email: true },
     });
 
     if (!user) {
-      res.status(401).json({ message: "Unauthorized - User not found" });
+      return res.status(401).json({ message: "Unauthorized - User not found" });
     }
 
-    (req as any).user = {
-      id: user?.id,
-      role: user?.role,
-      username: user?.username,
-      email: user?.email,
-    } as authenticatedUser;
+    // @ts-ignore // Workaround jika error 'user' masih muncul
+    req.user = user;
 
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({ message: "Unauthorized - Invalid token" });
+      return res.status(401).json({ message: "Unauthorized - Invalid token" });
     }
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Auth Middleware Error:", error);
+    if (!res.headersSent) {
+      return res
+        .status(500)
+        .json({ message: "Internal server error during authentication" });
+    }
   }
 };
-
-export const checkRole = (roles: string | string[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const user = (req as any).user as authenticatedUser;
-
-    if (!user) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
-    }
-
-    const userHasRole = Array.isArray(roles)
-      ? roles.includes(user.role)
-      : user.role === roles;
-
-    if (!userHasRole) {
-      res.status(403).json({ message: "Forbidden - Insufficient permissions" });
-      return;
-    }
-
-    next();
-  };
-};
-
