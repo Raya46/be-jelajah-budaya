@@ -144,7 +144,7 @@ class UserService {
         dataForRequest = {
           ...baseData,
           namaDaerah: namaDaerah,
-        } as Prisma.RequestAdminDaerahCreateInput; // Cast tipe jika perlu
+        } as Prisma.RequestAdminDaerahCreateInput;
       } else {
         throw new Error(
           "Kondisi tidak valid: daerahId atau namaDaerah harus ada."
@@ -239,7 +239,6 @@ class UserService {
     }
   };
 
-  // Update user
   updateUser = async (id: string, body: Request) => {
     const { username, email, alamat, role } = body.body;
 

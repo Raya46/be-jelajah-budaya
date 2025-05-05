@@ -5,8 +5,12 @@ import { deleteCloudinaryImage } from "../utils/cloudinary";
 class DaerahService {
   getDaerah = async () => {
     try {
-      const daerah = await prisma.daerah.findMany();
-      return daerah;
+      const [daerah, totalCount] = await prisma.$transaction([
+        prisma.daerah.findMany(),
+        prisma.daerah.count(),
+      ]);
+
+      return { data: daerah, totalCount };
     } catch (error) {
       console.error(error);
       throw error;

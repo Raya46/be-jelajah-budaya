@@ -7,25 +7,29 @@ type RequestStatusString = "PENDING" | "ACCEPT" | "REJECT";
 class RequestService {
   getRequestAdminDaerah = async () => {
     try {
-      const requestAdminDaerah = await prisma.requestAdminDaerah.findMany({
-        include: {
-          daerah: {
-            select: {
-              nama: true,
+      const [requestAdminDaerah, totalCount] = await prisma.$transaction([
+        prisma.requestAdminDaerah.findMany({
+          include: {
+            daerah: {
+              select: {
+                nama: true,
+              },
+            },
+            user: {
+              select: {
+                username: true,
+                email: true,
+                alamat: true,
+                ktp: true,
+                portofolio: true,
+              },
             },
           },
-          user: {
-            select: {
-              username: true,
-              email: true,
-              alamat: true,
-              ktp: true,
-              portofolio: true,
-            },
-          },
-        },
-      });
-      return requestAdminDaerah;
+        }),
+        prisma.requestAdminDaerah.count(),
+      ]);
+
+      return { data: requestAdminDaerah, totalCount };
     } catch (error) {
       console.error(error);
       throw error;
@@ -127,6 +131,38 @@ class RequestService {
       return requestAdminDaerah;
     } catch (error) {
       console.error(error);
+      throw error;
+    }
+  };
+
+  getRequestCountsByStatus = async () => {
+    try {
+      const counts = await prisma.requestAdminDaerah.groupBy({
+        by: ["status"],
+        _count: {
+          status: true,
+        },
+      });
+
+      const formattedCounts: Record<RequestStatusString, number> = {
+        PENDING: 0,
+        ACCEPT: 0,
+        REJECT: 0,
+      };
+
+      counts.forEach((item) => {
+        if (
+          item.status === "PENDING" ||
+          item.status === "ACCEPT" ||
+          item.status === "REJECT"
+        ) {
+          formattedCounts[item.status] = item._count.status;
+        }
+      });
+
+      return formattedCounts;
+    } catch (error) {
+      console.error("Error getting request counts by status:", error);
       throw error;
     }
   };

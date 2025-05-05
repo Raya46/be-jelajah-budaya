@@ -6,16 +6,20 @@ import { Prisma } from "@prisma/client";
 class EventService {
   getEvent = async () => {
     try {
-      const event = await prisma.event.findMany({
-        include: {
-          daerah: {
-            select: {
-              nama: true,
+      const [event, totalCount] = await prisma.$transaction([
+        prisma.event.findMany({
+          include: {
+            daerah: {
+              select: {
+                nama: true,
+              },
             },
           },
-        },
-      });
-      return event;
+        }),
+        prisma.event.count(),
+      ]);
+
+      return { data: event, totalCount };
     } catch (error) {
       console.error(error);
       throw error;

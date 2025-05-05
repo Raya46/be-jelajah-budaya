@@ -1,29 +1,35 @@
 import type { Request } from "express";
 import prisma from "../utils/database";
-import type { TypeBudaya } from "@prisma/client";
+import type { Prisma, TypeBudaya } from "@prisma/client";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
 
 class BudayaService {
   getBudaya = async (type?: TypeBudaya) => {
     try {
-      const whereClause = type ? { typeBudaya: type } : {};
+      const whereClause: Prisma.BudayaWhereInput = type
+        ? { typeBudaya: type }
+        : {};
 
-      const budaya = await prisma.budaya.findMany({
-        where: whereClause,
-        include: {
-          daerah: {
-            select: {
-              nama: true,
-              provinsi: {
-                select: {
-                  nama: true,
+      const [budaya, totalCount] = await prisma.$transaction([
+        prisma.budaya.findMany({
+          where: whereClause,
+          include: {
+            daerah: {
+              select: {
+                nama: true,
+                provinsi: {
+                  select: {
+                    nama: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
-      return budaya;
+        }),
+        prisma.budaya.count({ where: whereClause }),
+      ]);
+
+      return { data: budaya, totalCount };
     } catch (error) {
       console.error(error);
       throw error;
