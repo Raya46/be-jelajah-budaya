@@ -60,33 +60,33 @@ model Daerah {
   id                 Int                  @id @default(autoincrement())
   nama               String
   gambar             String?
-  provinsiId         Int
-  provinsi           Provinsi             @relation(fields: [provinsiId], references: [id])
+  provinsiId         Int?
+  provinsi           Provinsi?            @relation(fields: [provinsiId], references: [id])
   Budaya             Budaya[]
   RequestAdminDaerah RequestAdminDaerah[]
   Event              Event[]
 }
 
 model Budaya {
-  id        Int      @id @default(autoincrement())
-  nama      String
-  deskripsi String
-  gambar    String?
+  id         Int        @id @default(autoincrement())
+  nama       String
+  deskripsi  String
+  gambar     String?
   typeBudaya TypeBudaya
-  daerahId  Int
-  daerah    Daerah   @relation(fields: [daerahId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  daerahId   Int?
+  daerah     Daerah?    @relation(fields: [daerahId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model RequestAdminDaerah {
   id         Int      @id @default(autoincrement())
   namaDaerah String?
   status     Status   @default(PENDING)
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  daerahId   Int
-  daerah     Daerah   @relation(fields: [daerahId], references: [id])
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id])
+  daerahId   Int?
+  daerah     Daerah?  @relation(fields: [daerahId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -107,10 +107,10 @@ model Event {
 
 model UserEventRating {
   id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  eventId   Int
-  event     Event    @relation(fields: [eventId], references: [id])
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  eventId   Int?
+  event     Event?   @relation(fields: [eventId], references: [id])
   rating    Int?
   review    String?
   createdAt DateTime @default(now())

@@ -5,6 +5,7 @@ import cloudinary from "../utils/cloudinary";
 interface CloudinaryParams {
   folder: string;
   allowed_formats?: string[];
+  transformation?: Array<{ [key: string]: any }>;
 }
 
 const storage = new CloudinaryStorage({
@@ -12,6 +13,11 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "jelajah-budaya",
     allowed_formats: ["jpg", "png", "jpeg"],
+    transformation: [
+      { width: 1000, crop: "scale" },
+      { quality: "auto" },
+      { fetch_format: "auto" },
+    ],
   } as CloudinaryParams,
 });
 

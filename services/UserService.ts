@@ -2,8 +2,9 @@ import bcrypt from "bcryptjs";
 import prisma from "../utils/database";
 import { generateToken } from "../utils/auth";
 import type { Request } from "express";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role, Status } from "@prisma/client";
 import type { User } from "@prisma/client";
+import { deleteCloudinaryImage } from "../utils/cloudinary";
 
 interface UploadedFiles {
   ktp?: Express.Multer.File[];
@@ -73,7 +74,6 @@ class UserService {
         },
       });
 
-      // Pilih field yang akan dikembalikan
       const safeUser = {
         id: user.id,
         username: user.username,
@@ -114,24 +114,60 @@ class UserService {
       });
 
       if (!daerahId && !namaDaerah) {
+        await prisma.user.delete({ where: { id: user.id } });
+        if (ktpPath) await deleteCloudinaryImage(ktpPath);
+        if (portofolioPath) await deleteCloudinaryImage(portofolioPath);
         throw new Error(
           "daerahId atau namaDaerah diperlukan untuk registrasi admin daerah"
         );
       }
 
-      let requestData: any = { userId: user.id };
+      const baseData: Prisma.RequestAdminDaerahCreateWithoutDaerahInput = {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        status: Status.PENDING,
+      };
+
+      let dataForRequest: Prisma.RequestAdminDaerahCreateInput;
+
       if (daerahId) {
-        requestData.daerahId = parseInt(daerahId);
-      }
-      if (namaDaerah) {
-        requestData.namaDaerah = namaDaerah;
+        dataForRequest = {
+          ...baseData,
+          daerah: {
+            connect: { id: parseInt(daerahId) },
+          },
+        };
+      } else if (namaDaerah) {
+        dataForRequest = {
+          ...baseData,
+          namaDaerah: namaDaerah,
+        } as Prisma.RequestAdminDaerahCreateInput; // Cast tipe jika perlu
+      } else {
+        throw new Error(
+          "Kondisi tidak valid: daerahId atau namaDaerah harus ada."
+        );
       }
 
       const requestAdminDaerah = await prisma.requestAdminDaerah.create({
-        data: requestData,
+        data: dataForRequest,
       });
 
-      return { user, requestAdminDaerah };
+      const safeUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        alamat: user.alamat,
+        role: user.role,
+        ktp: user.ktp,
+        portofolio: user.portofolio,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
+
+      return { user: safeUser, requestAdminDaerah };
     } catch (error) {
       console.error("Error registering admin daerah:", error);
       throw error;
@@ -205,54 +241,70 @@ class UserService {
 
   // Update user
   updateUser = async (id: string, body: Request) => {
-    try {
-      const { username, email, alamat, role } = body.body;
-      const userData: any = {
-        username,
-        email,
-        alamat,
-      };
+    const { username, email, alamat, role } = body.body;
 
-      if (role && (body as any).user.role === "SUPER_ADMIN") {
-        userData.role = role;
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { id: parseInt(id) },
+      select: { ktp: true, portofolio: true },
+    });
 
-      if (body.body.password) {
-        userData.password = await bcrypt.hash(body.body.password, 10);
-      }
+    const userData: any = {
+      username,
+      email,
+      alamat,
+    };
 
-      const files = (body as any).files as UploadedFiles;
-      if (files?.ktp?.[0]?.path) {
-        userData.ktp = files.ktp[0].path;
-      }
-      if (files?.portofolio?.[0]?.path) {
-        userData.portofolio = files.portofolio[0].path;
-      }
-
-      const user = await prisma.user.update({
-        where: { id: parseInt(id) },
-        data: userData,
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          role: true,
-          alamat: true,
-          createdAt: true,
-          updatedAt: true,
-          ktp: true,
-          portofolio: true,
-        },
-      });
-      return user;
-    } catch (error) {
-      console.error(error);
-      throw error;
+    if (role && (body as any).user.role === "SUPER_ADMIN") {
+      userData.role = role;
     }
+
+    if (body.body.password) {
+      userData.password = await bcrypt.hash(body.body.password, 10);
+    }
+
+    const files = (body as any).files as UploadedFiles;
+
+    if (files?.ktp?.[0]?.path) {
+      const newKtpPath = files.ktp[0].path;
+      userData.ktp = newKtpPath;
+      if (existingUser?.ktp) {
+        await deleteCloudinaryImage(existingUser.ktp);
+      }
+    }
+
+    if (files?.portofolio?.[0]?.path) {
+      const newPortofolioPath = files.portofolio[0].path;
+      userData.portofolio = newPortofolioPath;
+      if (existingUser?.portofolio) {
+        await deleteCloudinaryImage(existingUser.portofolio);
+      }
+    }
+
+    const user = await prisma.user.update({
+      where: { id: parseInt(id) },
+      data: userData,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        alamat: true,
+        createdAt: true,
+        updatedAt: true,
+        ktp: true,
+        portofolio: true,
+      },
+    });
+    return user;
   };
 
   deleteUser = async (id: string) => {
     try {
+      const existingUser = await prisma.user.findUnique({
+        where: { id: parseInt(id) },
+        select: { ktp: true, portofolio: true },
+      });
+
       await prisma.requestAdminDaerah.deleteMany({
         where: { userId: parseInt(id) },
       });
@@ -264,6 +316,14 @@ class UserService {
       const user = await prisma.user.delete({
         where: { id: parseInt(id) },
       });
+
+      if (existingUser?.ktp) {
+        await deleteCloudinaryImage(existingUser.ktp);
+      }
+
+      if (existingUser?.portofolio) {
+        await deleteCloudinaryImage(existingUser.portofolio);
+      }
 
       return user;
     } catch (error) {

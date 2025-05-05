@@ -13,7 +13,7 @@ router.get("/", EventController.getEvent);
 router.get("/:id", EventController.getEventById);
 
 router.post(
-  "/",
+  "/create-event",
   // @ts-ignore
   authMiddleware,
   checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),

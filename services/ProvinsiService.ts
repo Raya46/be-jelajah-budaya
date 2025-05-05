@@ -1,5 +1,6 @@
 import type { Request } from "express";
 import prisma from "../utils/database";
+import { deleteCloudinaryImage } from "../utils/cloudinary";
 
 class ProvinsiService {
   getProvinsi = async () => {
@@ -20,50 +21,59 @@ class ProvinsiService {
       throw new Error("Gambar provinsi diperlukan");
     }
 
-    try {
-      const provinsi = await prisma.provinsi.create({
-        data: {
-          nama,
-          gambar: gambarPath,
-        },
-      });
-      return provinsi;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    const provinsi = await prisma.provinsi.create({
+      data: {
+        nama,
+        gambar: gambarPath,
+      },
+    });
+    return provinsi;
   };
 
   updateProvinsi = async (id: string, req: Request) => {
     const { nama } = req.body;
     const gambarPath = req.file?.path;
+
+    const existingProvinsi = await prisma.provinsi.findUnique({
+      where: { id: parseInt(id) },
+      select: { gambar: true },
+    });
+
     const dataToUpdate: { nama: string; gambar?: string } = { nama };
 
     if (gambarPath) {
       dataToUpdate.gambar = gambarPath;
+      if (existingProvinsi?.gambar) {
+        await deleteCloudinaryImage(existingProvinsi.gambar);
+      }
     }
 
-    try {
-      const provinsi = await prisma.provinsi.update({
-        where: {
-          id: parseInt(id),
-        },
-        data: dataToUpdate,
-      });
-      return provinsi;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    const provinsi = await prisma.provinsi.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: dataToUpdate,
+    });
+    return provinsi;
   };
 
   deleteProvinsi = async (id: string) => {
     try {
+      const existingProvinsi = await prisma.provinsi.findUnique({
+        where: { id: parseInt(id) },
+        select: { gambar: true },
+      });
+
       const provinsi = await prisma.provinsi.delete({
         where: {
           id: parseInt(id),
         },
       });
+
+      if (existingProvinsi?.gambar) {
+        await deleteCloudinaryImage(existingProvinsi.gambar);
+      }
+
       return provinsi;
     } catch (error) {
       console.error(error);

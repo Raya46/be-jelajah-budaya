@@ -29,7 +29,6 @@ router.post(
   // @ts-ignore
   authMiddleware,
   checkRole([Role.SUPER_ADMIN]),
-  // Ganti handler ke UserController.createAdmin
   UserController.createAdmin
 );
 router.get(

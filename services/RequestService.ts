@@ -1,7 +1,6 @@
-import prisma from "../utils/database";
-import type { Request as ExpressRequest } from "express";
 import { Role } from "@prisma/client";
-import type { RequestAdminDaerah } from "@prisma/client";
+import type { Request as ExpressRequest } from "express";
+import prisma from "../utils/database";
 
 type RequestStatusString = "PENDING" | "ACCEPT" | "REJECT";
 
@@ -130,10 +129,6 @@ class RequestService {
       console.error(error);
       throw error;
     }
-  };
-
-  createRequestAdminDaerah = async (req: ExpressRequest) => {
-    // Implementation of createRequestAdminDaerah method
   };
 }
 

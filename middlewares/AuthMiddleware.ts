@@ -16,7 +16,6 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    // Cek header Authorization
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res

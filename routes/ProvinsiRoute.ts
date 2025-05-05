@@ -12,7 +12,7 @@ router.get("/", ProvinsiController.getProvinsi);
 // @ts-ignore
 router.get("/:id", ProvinsiController.getProvinsiById);
 router.post(
-  "/create",
+  "/create-provinsi",
   // @ts-ignore
   authMiddleware,
   checkRole([Role.SUPER_ADMIN]),

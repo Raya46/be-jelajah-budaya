@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  // --- Create Users ---
   const superAdminPassword = await bcrypt.hash("superadmin123", 10);
   const superAdmin = await prisma.user.upsert({
     where: { email: "superadmin@example.com" },
@@ -39,13 +38,11 @@ async function main() {
       password: adminDaerahPassword,
       alamat: "Jl. Admin Denpasar",
       role: Role.ADMIN_DAERAH,
-      // ktp dan portofolio bisa ditambahkan jika perlu path default
     },
   });
 
-  // --- Create Provinsi ---
   const bali = await prisma.provinsi.upsert({
-    where: { id: 1 }, // Gunakan ID tetap jika memungkinkan untuk konsistensi tes
+    where: { id: 1 },
     update: { nama: "Bali", gambar: "https://example.com/bali.jpg" },
     create: {
       id: 1,
@@ -74,7 +71,6 @@ async function main() {
     },
   });
 
-  // --- Create Daerah ---
   const denpasar = await prisma.daerah.upsert({
     where: { id: 1 },
     update: {
@@ -119,9 +115,6 @@ async function main() {
       provinsiId: yogyakarta.id,
     },
   });
-
-  // --- Create Request Admin Daerah (untuk admin_denpasar) ---
-  // Cari dulu apakah request sudah ada
   const existingRequest = await prisma.requestAdminDaerah.findFirst({
     where: { userId: adminDaerahUser.id, daerahId: denpasar.id },
   });
@@ -140,11 +133,8 @@ async function main() {
     adminRequest = existingRequest;
     console.log("Admin request already exists:", adminRequest);
   }
-
-  // --- Create Budaya ---
-  // (Gunakan upsert untuk idempotensi)
   await prisma.budaya.upsert({
-    where: { id: 1 }, // Tetapkan ID jika perlu
+    where: { id: 1 },
     update: {
       nama: "Tari Kecak",
       deskripsi: "Tari Kecak adalah tarian tradisional dari Bali",
@@ -198,7 +188,6 @@ async function main() {
     },
   });
 
-  // --- Create Events ---
   const eventBali = await prisma.event.upsert({
     where: { id: 1 },
     update: {
@@ -219,10 +208,7 @@ async function main() {
       daerahId: denpasar.id,
     },
   });
-  // ... (upsert event lain jika perlu ID tetap)
 
-  // --- Create User Event Rating (User join Event Bali) ---
-  // Cek dulu apakah rating sudah ada
   const existingRating = await prisma.userEventRating.findFirst({
     where: { userId: regularUser.id, eventId: eventBali.id },
   });

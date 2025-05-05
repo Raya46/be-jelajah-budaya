@@ -81,49 +81,39 @@ class UserEventRateService {
   };
 
   joinEvent = async (userId: number, eventId: number) => {
-    try {
-      const existingRating = await prisma.userEventRating.findFirst({
-        where: {
-          userId: userId,
-          eventId: eventId,
-        },
-      });
+    const existingRating = await prisma.userEventRating.findFirst({
+      where: {
+        userId: userId,
+        eventId: eventId,
+      },
+    });
 
-      if (existingRating) {
-        throw new Error("User sudah mengikuti event ini");
-      }
-
-      const userEvent = await prisma.userEventRating.create({
-        data: {
-          userId: userId,
-          eventId: eventId,
-        },
-      });
-
-      return userEvent;
-    } catch (error) {
-      console.error("Error joining event:", error);
-      throw error;
+    if (existingRating) {
+      throw new Error("User sudah mengikuti event ini");
     }
+
+    const userEvent = await prisma.userEventRating.create({
+      data: {
+        userId: userId,
+        eventId: eventId,
+      },
+    });
+
+    return userEvent;
   };
 
   rateEvent = async (id: string, req: Request) => {
     const { rating, review } = req.body;
 
-    try {
-      const updatedRating = await prisma.userEventRating.update({
-        where: { id: parseInt(id) },
-        data: {
-          rating: parseInt(rating),
-          review,
-        },
-      });
+    const updatedRating = await prisma.userEventRating.update({
+      where: { id: parseInt(id) },
+      data: {
+        rating: parseInt(rating),
+        review,
+      },
+    });
 
-      return updatedRating;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    return updatedRating;
   };
 
   cancelEventParticipation = async (id: string) => {

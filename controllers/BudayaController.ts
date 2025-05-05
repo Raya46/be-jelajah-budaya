@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import BudayaService from "../services/BudayaService";
 import { TypeBudaya, Prisma } from "@prisma/client";
 
-// Helper untuk validasi TypeBudaya
 const isValidTypeBudaya = (type: any): type is TypeBudaya => {
   return Object.values(TypeBudaya).includes(type);
 };

@@ -1,13 +1,7 @@
 import { Router } from "express";
-// Gunakan type-only imports
-import type { Request, Response, NextFunction, RequestHandler } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import UserEventRateController from "../controllers/UserEventRateController";
-import { authMiddleware } from "../middlewares/AuthMiddleware";
-import { checkRole } from "../middlewares/checkRole";
-import { Role } from "@prisma/client";
 
-// Wrapper untuk menangani async controller methods
-// Modifikasi untuk menangani promise dan error dengan lebih baik
 const asyncHandler =
   (
     fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
@@ -16,7 +10,7 @@ const asyncHandler =
     try {
       await fn(req, res, next);
     } catch (error) {
-      next(error); // Teruskan error ke middleware error handler Express
+      next(error);
     }
   };
 
@@ -34,8 +28,6 @@ router.get(
   asyncHandler(UserEventRateController.getRatingsByEventId)
 );
 
-// Routes Memerlukan Auth
-// Jika middleware auth sudah di level aplikasi (index.ts), tidak perlu di sini
 router.get(
   "/user/:userId",
   asyncHandler(UserEventRateController.getRatingsByUserId)

@@ -14,18 +14,14 @@ class UserController {
           .json({ message: "Email dan password diperlukan" });
       }
 
-      // Panggil UserService.login
       const loginResult = await UserService.login(email, password);
 
-      // Tangani jika ada error dari service (misal, email tidak ditemukan atau password salah)
       if (loginResult.error) {
-        const statusCode = loginResult.status || 401; // Default ke 401 jika status tidak ada
+        const statusCode = loginResult.status || 401;
         return res.status(statusCode).json({ message: loginResult.error });
       }
 
-      // Jika berhasil, service harusnya mengembalikan token dan user data
       if (!loginResult.token || !loginResult.user) {
-        // Ini seharusnya tidak terjadi jika error sudah ditangani
         console.error("Login service succeeded but missing token or user data");
         return res.status(500).json({ message: "Internal Server Error" });
       }
@@ -56,12 +52,9 @@ class UserController {
   createAdmin = async (req: Request, res: Response) => {
     try {
       const newUser = await UserService.createAdminDaerah(req);
-      // Asumsikan service TIDAK mengembalikan password
-      // Jika ya, hapus baris destructuring di bawah
-      // const { password, ...userWithoutPassword } = newUser;
       res
         .status(201)
-        .json({ message: "Admin daerah berhasil dibuat", user: newUser }); // Kirim newUser langsung
+        .json({ message: "Admin daerah berhasil dibuat", user: newUser });
     } catch (error: any) {
       console.error("Error creating admin:", error);
       if (
@@ -100,11 +93,10 @@ class UserController {
   getUserById = async (req: Request, res: Response) => {
     try {
       const { id: requestedUserIdString } = req.params;
-      const requestedUserId = parseInt(requestedUserIdString); // Konversi ke number
-      const authenticatedUserId = req.user?.id; // ID user dari token (asumsi number)
-      const authenticatedUserRole = req.user?.role; // Role user dari token
+      const requestedUserId = parseInt(requestedUserIdString);
+      const authenticatedUserId = req.user?.id;
+      const authenticatedUserRole = req.user?.role;
 
-      // Validasi requestedUserId setelah parseInt
       if (isNaN(requestedUserId)) {
         return res.status(400).json({ message: "Format User ID tidak valid" });
       }
@@ -116,19 +108,16 @@ class UserController {
         authenticatedUserRole === Role.ADMIN_DAERAH ||
         isAccessingSelf
       ) {
-        const user = await UserService.getUserById(requestedUserIdString); // Kirim string ke service jika service menghandle konversi
+        const user = await UserService.getUserById(requestedUserIdString);
         if (!user) {
           return res.status(404).json({ message: "User tidak ditemukan" });
         }
-        // Asumsikan service TIDAK mengembalikan password
-        // const { password, ...userWithoutPassword } = user;
-        return res.status(200).json({ message: "success", user: user }); // Kirim user langsung
+        return res.status(200).json({ message: "success", user: user });
       } else {
         return res.status(403).json({ message: "Akses ditolak" });
       }
     } catch (error: any) {
       console.error("Error fetching user by ID:", error);
-      // Penanganan error format ID sudah ada di atas
       res.status(500).json({ message: "Internal Server Error" });
     }
   };

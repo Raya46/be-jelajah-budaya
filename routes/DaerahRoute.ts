@@ -15,7 +15,7 @@ router.get("/:id", DaerahController.getDaerahById);
 
 // POST (Admin Daerah / Super Admin)
 router.post(
-  "/",
+  "/create-daerah",
   // @ts-ignore
   authMiddleware,
   checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
