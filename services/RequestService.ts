@@ -37,7 +37,7 @@ class RequestService {
   };
 
   updateRequestAdminDaerah = async (id: string, req: ExpressRequest) => {
-    const { status } = req.body;
+    const { status, namaDaerah, daerahId } = req.body;
 
     const validStatuses: RequestStatusString[] = [
       "PENDING",
@@ -59,28 +59,23 @@ class RequestService {
 
       const updatedRequest = await prisma.requestAdminDaerah.update({
         where: { id: parseInt(id) },
-        data: { status: status as RequestStatusString },
+        data: {
+          status: status as RequestStatusString,
+          namaDaerah,
+          daerahId: parseInt(daerahId),
+        },
       });
 
       if (updatedRequest.status === "ACCEPT") {
         const userIdToUpdate = updatedRequest.userId;
-        const daerahIdToConnect = updatedRequest.daerahId;
 
         if (!userIdToUpdate) {
           throw new Error("User ID tidak ditemukan pada request");
         }
 
-        const updateUserData: any = { role: Role.ADMIN_DAERAH };
-
-        if (daerahIdToConnect) {
-          updateUserData.daerah = {
-            connect: { id: daerahIdToConnect },
-          };
-        }
-
         await prisma.user.update({
           where: { id: userIdToUpdate },
-          data: updateUserData,
+          data: { role: Role.ADMIN_DAERAH },
         });
       }
 

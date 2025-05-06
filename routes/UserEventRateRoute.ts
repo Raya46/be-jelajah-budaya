@@ -1,6 +1,7 @@
 import { Router } from "express";
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import UserEventRateController from "../controllers/UserEventRateController";
+import { authMiddleware } from "../middlewares/AuthMiddleware";
 
 const asyncHandler =
   (
@@ -32,10 +33,22 @@ router.get(
   "/user/:userId",
   asyncHandler(UserEventRateController.getRatingsByUserId)
 );
-router.post("/join", asyncHandler(UserEventRateController.joinEvent));
-router.put("/:id/rate", asyncHandler(UserEventRateController.rateEvent));
+router.post(
+  "/join",
+  // @ts-ignore
+  authMiddleware,
+  asyncHandler(UserEventRateController.joinEvent)
+);
+router.put(
+  "/:id/rate",
+  // @ts-ignore
+  authMiddleware,
+  asyncHandler(UserEventRateController.rateEvent)
+);
 router.delete(
   "/:id",
+  // @ts-ignore
+  authMiddleware,
   asyncHandler(UserEventRateController.cancelEventParticipation)
 );
 

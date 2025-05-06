@@ -84,12 +84,11 @@ class UserEventRateController {
     }
     const eventId = parseInt(eventIdString);
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
     try {
-      const userEvent = await UserEventRateService.joinEvent(userId, eventId);
+      const userEvent = await UserEventRateService.joinEvent(
+        userId as number,
+        eventId
+      );
       res.status(201).json({
         message: "Berhasil mengikuti event",
         userEvent,
