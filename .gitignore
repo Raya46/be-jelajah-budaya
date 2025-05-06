@@ -168,8 +168,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-tests/
-
 # IntelliJ based IDEs
 .idea
 

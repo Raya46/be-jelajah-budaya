@@ -1,10 +1,9 @@
-import bcrypt from "bcryptjs";
-import prisma from "../utils/database";
-import { generateToken } from "../utils/auth";
-import type { Request } from "express";
 import { Prisma, Role, Status } from "@prisma/client";
-import type { User } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import type { Request } from "express";
+import { generateToken } from "../utils/auth";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
+import prisma from "../utils/database";
 
 interface UploadedFiles {
   ktp?: Express.Multer.File[];

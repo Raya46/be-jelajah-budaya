@@ -124,7 +124,7 @@ async function main() {
     adminRequest = await prisma.requestAdminDaerah.create({
       data: {
         userId: adminDaerahUser.id,
-        daerahId: denpasar.id, // Request untuk Denpasar
+        daerahId: denpasar.id,
         status: "PENDING",
       },
     });
