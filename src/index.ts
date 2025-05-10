@@ -6,15 +6,15 @@ import helmet from "helmet";
 import { createServer } from "http";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import swaggerDefinition from "../docs/index";
+import swaggerDefinition from "./docs/index";
 
-import budayaRoute from "../routes/BudayaRoute";
-import daerahRoute from "../routes/DaerahRoute";
-import eventRoute from "../routes/EventRoute";
-import provinsiRoute from "../routes/ProvinsiRoute";
-import requestRoute from "../routes/RequestRoute";
-import userEventRateRoute from "../routes/UserEventRateRoute";
-import userRoute from "../routes/UserRoute";
+import budayaRoute from "./routes/BudayaRoute";
+import daerahRoute from "./routes/DaerahRoute";
+import eventRoute from "./routes/EventRoute";
+import provinsiRoute from "./routes/ProvinsiRoute";
+import requestRoute from "./routes/RequestRoute";
+import userEventRateRoute from "./routes/UserEventRateRoute";
+import userRoute from "./routes/UserRoute";
 
 dotenv.config();
 const app = express();
