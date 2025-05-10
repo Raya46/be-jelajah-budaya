@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
-import { createServer } from "http";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import swaggerDefinition from "../docs/index";
@@ -18,7 +17,6 @@ import userRoute from "../routes/UserRoute";
 
 dotenv.config();
 const app = express();
-const httpServer = createServer(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -61,8 +59,8 @@ app.use(
 );
 
 const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, async () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-export { app, httpServer };
+export default app;
