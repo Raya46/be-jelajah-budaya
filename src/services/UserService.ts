@@ -3,7 +3,6 @@ import type { Request } from "express";
 import { generateToken } from "../utils/auth";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
 import prisma from "../utils/database";
-import { type Role, type RequestStatus } from "../types/common";
 
 interface UploadedFiles {
   ktp?: Express.Multer.File[];
