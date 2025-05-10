@@ -1,4 +1,5 @@
 { "version": 2, 
-"buildCommand": "cd prisma && bunx prisma generate",
+"buildCommand": "bunx prisma generate && bun run build",
+"outputDirectory": "dist",
 "rewrites": 
 [{ "source": "/(.*)", "destination": "/api" }]}

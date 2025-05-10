@@ -8,7 +8,7 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "rootDir": "./src",
-    "outDir": "./public",
+    "outDir": "./dist",
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -26,5 +26,5 @@
     "noPropertyAccessFromIndexSignature": false
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "public"],
+  "exclude": ["node_modules", "dist"],
 }
