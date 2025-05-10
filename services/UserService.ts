@@ -121,7 +121,7 @@ class UserService {
         );
       }
 
-      const baseData: Prisma.RequestAdminDaerahCreateWithoutDaerahInput = {
+      const baseData = {
         user: {
           connect: {
             id: user.id,
@@ -130,7 +130,7 @@ class UserService {
         status: Status.PENDING,
       };
 
-      let dataForRequest: Prisma.RequestAdminDaerahCreateInput;
+      let dataForRequest;
 
       if (daerahId) {
         dataForRequest = {
@@ -143,7 +143,7 @@ class UserService {
         dataForRequest = {
           ...baseData,
           namaDaerah: namaDaerah,
-        } as Prisma.RequestAdminDaerahCreateInput;
+        };
       } else {
         throw new Error(
           "Kondisi tidak valid: daerahId atau namaDaerah harus ada."

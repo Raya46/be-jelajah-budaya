@@ -1,8 +1,6 @@
+import { Prisma, Role } from "@prisma/client";
 import type { Request, Response } from "express";
 import UserService from "../services/UserService";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { Prisma, Role } from "@prisma/client";
 
 class UserController {
   login = async (req: Request, res: Response) => {
