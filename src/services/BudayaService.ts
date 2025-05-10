@@ -1,14 +1,12 @@
 import type { Request } from "express";
 import prisma from "../utils/database";
-import type { Prisma, TypeBudaya } from "@prisma/client";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
+import { type TypeBudaya, VALID_BUDAYA_TYPES } from "../types/budaya";
 
 class BudayaService {
   getBudaya = async (type?: TypeBudaya) => {
     try {
-      const whereClause: Prisma.BudayaWhereInput = type
-        ? { typeBudaya: type }
-        : {};
+      const whereClause = type ? ({ typeBudaya: type } as any) : {};
 
       const [budaya, totalCount] = await prisma.$transaction([
         prisma.budaya.findMany({
@@ -25,8 +23,8 @@ class BudayaService {
               },
             },
           },
-        }),
-        prisma.budaya.count({ where: whereClause }),
+        } as any),
+        prisma.budaya.count({ where: whereClause } as any),
       ]);
 
       return { data: budaya, totalCount };
@@ -61,11 +59,20 @@ class BudayaService {
   };
 
   createBudaya = async (req: Request) => {
-    const { nama, deskripsi, daerahId, typeBudaya } = req.body;
+    const { nama, deskripsi, daerahId } = req.body;
+    const rawTypeBudaya: unknown = req.body.typeBudaya;
     if (!req.file) {
       throw new Error("Gambar budaya diperlukan");
     }
     const gambarPath = req.file.path;
+
+    if (
+      typeof rawTypeBudaya !== "string" ||
+      !VALID_BUDAYA_TYPES.includes(rawTypeBudaya)
+    ) {
+      throw new Error("Nilai typeBudaya tidak valid: " + rawTypeBudaya);
+    }
+    const typeBudaya = rawTypeBudaya as TypeBudaya;
 
     const budaya = await prisma.budaya.create({
       data: {
@@ -73,14 +80,15 @@ class BudayaService {
         deskripsi,
         gambar: gambarPath,
         daerahId: parseInt(daerahId),
-        typeBudaya: typeBudaya as TypeBudaya,
+        typeBudaya: typeBudaya as any,
       },
     });
     return budaya;
   };
 
   updateBudaya = async (id: string, req: Request) => {
-    const { nama, deskripsi, daerahId, typeBudaya, gambar } = req.body;
+    const { nama, deskripsi, daerahId, gambar } = req.body;
+    const rawTypeBudaya = req.body.typeBudaya;
 
     const existingBudaya = await prisma.budaya.findUnique({
       where: { id: parseInt(id) },
@@ -91,15 +99,22 @@ class BudayaService {
       nama,
       deskripsi,
       gambar,
-      daerahId,
-      typeBudaya,
     };
 
-    if (daerahId) {
+    if (daerahId !== undefined) {
       dataToUpdate.daerahId = parseInt(daerahId);
     }
-    if (typeBudaya) {
-      dataToUpdate.typeBudaya = typeBudaya as TypeBudaya;
+
+    let typeBudaya: TypeBudaya | undefined;
+    if (rawTypeBudaya !== undefined) {
+      if (
+        typeof rawTypeBudaya !== "string" ||
+        !VALID_BUDAYA_TYPES.includes(rawTypeBudaya)
+      ) {
+        throw new Error("Nilai typeBudaya tidak valid: " + rawTypeBudaya);
+      }
+      typeBudaya = rawTypeBudaya as TypeBudaya;
+      dataToUpdate.typeBudaya = typeBudaya as any;
     }
 
     if (req.file) {

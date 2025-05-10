@@ -1,7 +1,7 @@
 import type { Request } from "express";
 import prisma from "../utils/database";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
-import { Prisma } from "@prisma/client";
+import { type EventUpdateData } from "../types/event";
 
 class EventService {
   getEvent = async () => {
@@ -56,7 +56,7 @@ class EventService {
       select: { gambar: true },
     });
 
-    const dataToUpdate: Prisma.EventUpdateInput = {};
+    const dataToUpdate: EventUpdateData = {};
 
     if (nama !== undefined) {
       dataToUpdate.nama = nama;

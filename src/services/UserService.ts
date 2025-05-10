@@ -1,9 +1,9 @@
-import { Prisma, Role, Status } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import type { Request } from "express";
 import { generateToken } from "../utils/auth";
 import { deleteCloudinaryImage } from "../utils/cloudinary";
 import prisma from "../utils/database";
+import { type Role, type RequestStatus } from "../types/common";
 
 interface UploadedFiles {
   ktp?: Express.Multer.File[];
@@ -127,7 +127,7 @@ class UserService {
             id: user.id,
           },
         },
-        status: Status.PENDING,
+        status: "PENDING",
       };
 
       let dataForRequest;
@@ -151,7 +151,7 @@ class UserService {
       }
 
       const requestAdminDaerah = await prisma.requestAdminDaerah.create({
-        data: dataForRequest,
+        data: dataForRequest as any,
       });
 
       const safeUser = {
@@ -219,7 +219,7 @@ class UserService {
   getRegularUsers = async () => {
     try {
       return await prisma.user.findMany({
-        where: { role: Role.USER },
+        where: { role: "USER" },
         select: {
           id: true,
           username: true,

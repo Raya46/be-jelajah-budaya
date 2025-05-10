@@ -1,6 +1,6 @@
-import { Role } from "@prisma/client";
 import type { Request as ExpressRequest } from "express";
 import prisma from "../utils/database";
+import { type Role, type RequestStatus } from "../types/common";
 
 type RequestStatusString = "PENDING" | "ACCEPT" | "REJECT";
 
@@ -75,7 +75,7 @@ class RequestService {
 
         await prisma.user.update({
           where: { id: userIdToUpdate },
-          data: { role: Role.ADMIN_DAERAH },
+          data: { role: "ADMIN_DAERAH" },
         });
       }
 

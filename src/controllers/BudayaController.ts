@@ -1,9 +1,9 @@
-import { TypeBudaya } from "@prisma/client";
 import type { Request, Response } from "express";
 import BudayaService from "../services/BudayaService";
+import { type TypeBudaya, VALID_BUDAYA_TYPES } from "../types/budaya";
 
 const isValidTypeBudaya = (type: any): type is TypeBudaya => {
-  return Object.values(TypeBudaya).includes(type);
+  return VALID_BUDAYA_TYPES.includes(type);
 };
 
 class BudayaController {
@@ -14,7 +14,7 @@ class BudayaController {
 
       if (type && typeof type === "string") {
         if (isValidTypeBudaya(type)) {
-          filter = type;
+          filter = type as TypeBudaya;
         } else {
           return res
             .status(400)

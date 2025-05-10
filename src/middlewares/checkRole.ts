@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Role } from "@prisma/client";
+import { type Role } from "../types/common";
 
 /**
  * @param allowedRoles

@@ -48,7 +48,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node ./dist/server.js",
+    "start": "node ./src/server.ts",
     "dev":"bun --watch ./src/server.ts",
     "seed": "bunx prisma db seed --schema ./src/prisma/schema.prisma"
   },
