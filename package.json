@@ -47,7 +47,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "bun install && bunx prisma generate --schema ./src/prisma/schema.prisma",
+    "install": "bunx prisma generate --schema ./src/prisma/schema.prisma",
     "build": "tsc",
     "start": "node ./dist/server.js",
     "dev":"bun --watch ./src/server.ts",
