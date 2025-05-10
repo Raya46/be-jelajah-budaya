@@ -17,7 +17,7 @@ import userEventRateRoute from "../routes/UserEventRateRoute";
 import userRoute from "../routes/UserRoute";
 
 dotenv.config();
-const app = (module.exports = express());
+const app = express();
 const httpServer = createServer(app);
 
 app.use(express.json());
