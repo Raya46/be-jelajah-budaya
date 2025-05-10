@@ -2,7 +2,9 @@
   "name": "be-jelajah-budaya",
   "module": "server.ts",
   "type": "module",
-  "prisma": { "seed": "node --loader ts-node/esm ./src/prisma/seed.ts" },
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
+  },
   "devDependencies": {
     "@prisma/client": "^6.5.0",
     "@types/bcrypt": "^5.0.2",
@@ -41,16 +43,15 @@
   },
   "version": "1.0.0",
   "description": "To install dependencies:",
-  "main": "dist/server.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "node ./src/server.ts",
+    "start": "bun run ./src/server.ts",
     "dev":"bun --watch ./src/server.ts",
-    "seed": "bunx prisma db seed --schema ./src/prisma/schema.prisma"
+    "postinstall": "bun install"
   },
   "repository": {
     "type": "git",
