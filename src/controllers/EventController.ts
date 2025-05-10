@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import EventService from "../services/EventService";
-import { Prisma } from "@prisma/client";
 
 class EventController {
   getEvent = async (req: Request, res: Response) => {
@@ -19,23 +18,6 @@ class EventController {
       res.status(201).json({ message: "success", event });
     } catch (error) {
       console.error("Error creating event:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Gambar event diperlukan")
-      ) {
-        return res.status(400).json({ message: error.message });
-      }
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2003") {
-          return res.status(400).json({ message: "Daerah ID tidak valid." });
-        }
-      }
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid date string")
-      ) {
-        return res.status(400).json({ message: "Format tanggal tidak valid." });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -47,18 +29,6 @@ class EventController {
       res.status(200).json({ message: "Event berhasil diperbarui", event });
     } catch (error: any) {
       console.error("Error updating event:", error);
-      if (
-        (error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025") ||
-        error.message === "Event not found"
-      ) {
-        return res.status(404).json({ message: "Event tidak ditemukan" });
-      } else if (
-        error instanceof Error &&
-        error.message.includes("Format ID")
-      ) {
-        return res.status(400).json({ message: "Format ID event tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -70,11 +40,6 @@ class EventController {
       res.status(200).json({ message: "success", event });
     } catch (error) {
       console.error("Error deleting event:", error);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2025") {
-          return res.status(404).json({ message: "Event tidak ditemukan" });
-        }
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -89,12 +54,6 @@ class EventController {
       res.status(200).json({ message: "success", event });
     } catch (error) {
       console.error("Error fetching event by ID:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `id`")
-      ) {
-        return res.status(400).json({ message: "Format ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };

@@ -1,4 +1,3 @@
-import { Prisma, Role } from "@prisma/client";
 import type { Request, Response } from "express";
 import UserService from "../services/UserService";
 
@@ -55,12 +54,6 @@ class UserController {
         .json({ message: "Admin daerah berhasil dibuat", user: newUser });
     } catch (error: any) {
       console.error("Error creating admin:", error);
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
-        return res.status(409).json({ message: "Email sudah terdaftar" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -102,8 +95,8 @@ class UserController {
       const isAccessingSelf = authenticatedUserId === requestedUserId;
 
       if (
-        authenticatedUserRole === Role.SUPER_ADMIN ||
-        authenticatedUserRole === Role.ADMIN_DAERAH ||
+        authenticatedUserRole === "SUPER_ADMIN" ||
+        authenticatedUserRole === "ADMIN_DAERAH" ||
         isAccessingSelf
       ) {
         const user = await UserService.getUserById(requestedUserIdString);
@@ -150,12 +143,6 @@ class UserController {
       res.status(200).json({ message: "User berhasil dihapus" });
     } catch (error: any) {
       console.error("Error deleting user:", error);
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ message: "User tidak ditemukan" });
-      }
       res.status(500).json({ message: "Gagal menghapus user" });
     }
   };

@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import UserEventRateService from "../services/UserEventRateService";
-import { Prisma } from "@prisma/client";
 
 class UserEventRateController {
   getAllRatings = async (req: Request, res: Response) => {
@@ -25,12 +24,6 @@ class UserEventRateController {
       res.status(200).json({ message: "success", rating });
     } catch (error: any) {
       console.error("Error fetching rating by ID:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `id`")
-      ) {
-        return res.status(400).json({ message: "Format ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -42,12 +35,6 @@ class UserEventRateController {
       res.status(200).json({ message: "success", ratings });
     } catch (error: any) {
       console.error("Error fetching ratings by User ID:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `userId`")
-      ) {
-        return res.status(400).json({ message: "Format User ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -59,12 +46,6 @@ class UserEventRateController {
       res.status(200).json({ message: "success", ratings });
     } catch (error: any) {
       console.error("Error fetching ratings by Event ID:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `eventId`")
-      ) {
-        return res.status(400).json({ message: "Format Event ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -95,21 +76,6 @@ class UserEventRateController {
       });
     } catch (error: any) {
       console.error("Error joining event:", error);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2003") {
-          return res
-            .status(404)
-            .json({ message: "User atau Event tidak ditemukan." });
-        } else if (error.code === "P2002") {
-          return res
-            .status(409)
-            .json({ message: "Anda sudah terdaftar di event ini." });
-        }
-      } else if (error instanceof Error) {
-        if (error.message === "User sudah mengikuti event ini") {
-          return res.status(409).json({ message: error.message });
-        }
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -137,20 +103,6 @@ class UserEventRateController {
       });
     } catch (error: any) {
       console.error("Error rating event:", error);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2025") {
-          return res
-            .status(404)
-            .json({ message: "Partisipasi event tidak ditemukan" });
-        }
-      } else if (
-        error instanceof Error &&
-        error.message.includes("Participation not found")
-      ) {
-        return res
-          .status(404)
-          .json({ message: "Partisipasi event tidak ditemukan" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -164,20 +116,6 @@ class UserEventRateController {
       });
     } catch (error: any) {
       console.error("Error canceling participation:", error);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2025") {
-          return res
-            .status(404)
-            .json({ message: "Partisipasi event tidak ditemukan" });
-        }
-      } else if (
-        error instanceof Error &&
-        error.message.includes("Participation not found")
-      ) {
-        return res
-          .status(404)
-          .json({ message: "Partisipasi event tidak ditemukan" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -205,12 +143,6 @@ class UserEventRateController {
       });
     } catch (error: any) {
       console.error("Error getting average rating:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `eventId`")
-      ) {
-        return res.status(400).json({ message: "Format Event ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };

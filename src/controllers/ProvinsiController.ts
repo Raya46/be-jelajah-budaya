@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import ProvinsiService from "../services/ProvinsiService";
-import { Prisma } from "@prisma/client";
 
 class ProvinsiController {
   getProvinsi = async (req: Request, res: Response) => {
@@ -23,12 +22,6 @@ class ProvinsiController {
       res.status(200).json({ message: "success", provinsi });
     } catch (error) {
       console.error("Error fetching provinsi by ID:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Invalid argument `id`")
-      ) {
-        return res.status(400).json({ message: "Format ID tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -39,12 +32,6 @@ class ProvinsiController {
       res.status(201).json({ message: "success", provinsi });
     } catch (error) {
       console.error("Error creating provinsi:", error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Gambar provinsi diperlukan")
-      ) {
-        return res.status(400).json({ message: error.message });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -58,20 +45,6 @@ class ProvinsiController {
         .json({ message: "Provinsi berhasil diperbarui", provinsi });
     } catch (error: any) {
       console.error("Error updating provinsi:", error);
-      if (
-        (error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025") ||
-        error.message === "Provinsi not found"
-      ) {
-        return res.status(404).json({ message: "Provinsi tidak ditemukan" });
-      } else if (
-        error instanceof Error &&
-        error.message.includes("Format ID")
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Format ID provinsi tidak valid" });
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
@@ -83,11 +56,6 @@ class ProvinsiController {
       res.status(200).json({ message: "Provinsi berhasil dihapus" });
     } catch (error) {
       console.error("Error deleting provinsi:", error);
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2025") {
-          return res.status(404).json({ message: "Provinsi tidak ditemukan" });
-        }
-      }
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
