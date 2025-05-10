@@ -46,7 +46,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "prisma generate && tsc",
+    "install": "npx prisma generate --schema ./prisma/schema.prisma",
+    "build": "tsc",
     "start": "node ./dist/index.js",
     "dev":"bun --watch ./src/index.ts"
   },
