@@ -1,5 +1,11 @@
 { "version": 2, 
 "buildCommand": "bunx prisma generate && bun run build",
 "outputDirectory": "dist",
-"rewrites": 
-[{ "source": "/(.*)", "destination": "/api" }]}
+"functions": {
+  "api/*.js": {
+    "runtime": "nodejs20.x"
+  }
+},
+"routes": [
+  { "src": "/(.*)", "dest": "/index.js" }
+]}
