@@ -2,9 +2,6 @@
   "name": "be-jelajah-budaya",
   "module": "index.ts",
   "type": "module",
-  "prisma": {
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
-  },
   "devDependencies": {
     "@prisma/client": "^6.5.0",
     "@types/bcrypt": "^5.0.2",
