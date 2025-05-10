@@ -1,5 +1,5 @@
-{
-  "version": 2,
-  "installCommand": "bun install",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
-}
+{ "version": 2, 
+"installCommand": "bun install",
+  "buildCommand": "",
+"rewrites": 
+[{ "source": "/(.*)", "destination": "/api" }]}
