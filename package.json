@@ -50,7 +50,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "bun run /api/index.ts",
-    "dev":"bun --watch /api/index.ts"
+    "dev":"bun --watch /api/index.ts",
+    "postinstall": "bun install bunx prisma generate bunx prisma db push bunx prisma migrate dev bunx prisma db seed bun run build"
   },
   "repository": {
     "type": "git",
