@@ -3,7 +3,6 @@ import UserController from "../controllers/UserController";
 import { authMiddleware } from "../middlewares/AuthMiddleware";
 import upload from "../middlewares/CloudinaryUploadMiddleware";
 import { checkRole } from "../middlewares/checkRole";
-import { Role } from "@prisma/client";
 
 const router = Router();
 
@@ -28,14 +27,14 @@ router.post(
   "/create-admin",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN]),
+  checkRole(["SUPER_ADMIN"]),
   UserController.createAdmin
 );
 router.get(
   "/",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN]),
+  checkRole(["SUPER_ADMIN"]),
   // @ts-ignore
   UserController.getAllUsers
 );
@@ -44,7 +43,7 @@ router.get(
   "/regular",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  checkRole(["SUPER_ADMIN", "ADMIN_DAERAH"]),
   // @ts-ignore
   UserController.getRegularUsers
 );
@@ -53,7 +52,7 @@ router.get(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  checkRole(["SUPER_ADMIN", "ADMIN_DAERAH"]),
   // @ts-ignore
   UserController.getUserById
 );
@@ -62,7 +61,7 @@ router.put(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  checkRole(["SUPER_ADMIN", "ADMIN_DAERAH"]),
   upload.fields([
     { name: "ktp", maxCount: 1 },
     { name: "portofolio", maxCount: 1 },
@@ -75,7 +74,7 @@ router.delete(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN, Role.ADMIN_DAERAH]),
+  checkRole(["SUPER_ADMIN", "ADMIN_DAERAH"]),
   // @ts-ignore
   UserController.deleteUser
 );

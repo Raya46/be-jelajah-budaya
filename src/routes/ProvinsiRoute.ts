@@ -3,7 +3,6 @@ import ProvinsiController from "../controllers/ProvinsiController";
 import { authMiddleware } from "../middlewares/AuthMiddleware";
 import upload from "../middlewares/CloudinaryUploadMiddleware";
 import { checkRole } from "../middlewares/checkRole";
-import { Role } from "@prisma/client";
 
 const router = Router();
 
@@ -15,7 +14,7 @@ router.post(
   "/create-provinsi",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN]),
+  checkRole(["SUPER_ADMIN"]),
   upload.single("gambar"),
   // @ts-ignore
   ProvinsiController.createProvinsi
@@ -24,7 +23,7 @@ router.put(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN]),
+  checkRole(["SUPER_ADMIN"]),
   upload.single("gambar"),
   // @ts-ignore
   ProvinsiController.updateProvinsi
@@ -33,7 +32,7 @@ router.delete(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.SUPER_ADMIN]),
+  checkRole(["SUPER_ADMIN"]),
   // @ts-ignore
   ProvinsiController.deleteProvinsi
 );

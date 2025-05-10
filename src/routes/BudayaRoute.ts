@@ -3,7 +3,6 @@ import BudayaController from "../controllers/BudayaController";
 import upload from "../middlewares/CloudinaryUploadMiddleware";
 import { authMiddleware } from "../middlewares/AuthMiddleware";
 import { checkRole } from "../middlewares/checkRole";
-import { Role } from "@prisma/client";
 
 const router = Router();
 
@@ -18,7 +17,7 @@ router.post(
   "/create-budaya",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   upload.single("gambar"),
   // @ts-ignore
   BudayaController.createBudaya
@@ -29,7 +28,7 @@ router.put(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   upload.single("gambar"), // Gambar opsional saat update
   // @ts-ignore
   BudayaController.updateBudaya
@@ -40,7 +39,7 @@ router.delete(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   // @ts-ignore
   BudayaController.deleteBudaya
 );

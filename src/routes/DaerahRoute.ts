@@ -3,7 +3,6 @@ import DaerahController from "../controllers/DaerahController";
 import upload from "../middlewares/CloudinaryUploadMiddleware";
 import { authMiddleware } from "../middlewares/AuthMiddleware";
 import { checkRole } from "../middlewares/checkRole";
-import { Role } from "@prisma/client";
 
 const router = Router();
 
@@ -18,7 +17,7 @@ router.post(
   "/create-daerah",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   upload.single("gambar"),
   // @ts-ignore
   DaerahController.createDaerah
@@ -29,7 +28,7 @@ router.put(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   upload.single("gambar"), // Gambar opsional saat update
   // @ts-ignore
   DaerahController.updateDaerah
@@ -40,7 +39,7 @@ router.delete(
   "/:id",
   // @ts-ignore
   authMiddleware,
-  checkRole([Role.ADMIN_DAERAH, Role.SUPER_ADMIN]),
+  checkRole(["ADMIN_DAERAH", "SUPER_ADMIN"]),
   // @ts-ignore
   DaerahController.deleteDaerah
 );
