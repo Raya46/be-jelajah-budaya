@@ -52,9 +52,11 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "bun run ./api/index.ts",
+    "start": "bun run ./src/index.ts",
+    "dev": "bun --watch ./src/index.ts",
+    "build": "tsc",
     "postinstall": "prisma generate",
-    "vercel-dev": "vercel dev"
+    "vercel-build": "echo hello"
   },
   "repository": {
     "type": "git",
