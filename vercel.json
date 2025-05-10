@@ -1,1 +1,4 @@
-{ "version": 2, "rewrites": [{ "source": "/(.*)", "destination": "/api" }] }
+{ "version": 2, 
+"buildCommand": "cd prisma && bunx prisma generate",
+"rewrites": 
+[{ "source": "/(.*)", "destination": "/api" }]}
