@@ -55,8 +55,7 @@
     "start": "bun run ./src/index.ts",
     "dev": "bun --watch ./src/index.ts",
     "build": "tsc",
-    "postinstall": "prisma generate",
-    "vercel-build": "echo hello"
+    "postinstall": "prisma generate"
   },
   "repository": {
     "type": "git",
