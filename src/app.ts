@@ -5,7 +5,7 @@ import express from "express";
 import helmet from "helmet";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import swaggerDefinition from "../api/docs/index";
+import swaggerDefinition from "../api/docs/app";
 import serverless from "serverless-http";
 
 import budayaRoute from "../src/routes/BudayaRoute";

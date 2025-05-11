@@ -1,3 +1,5 @@
 import app from "./app";
 
-export default app;
+import serverless from "serverless-http";
+
+export default serverless(app);
