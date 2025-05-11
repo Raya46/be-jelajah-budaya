@@ -8,7 +8,6 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "rootDir": "./",
-    "outDir": "./dist",
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -25,6 +24,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*", "./api/*.ts"],
-  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*", "./apis/*.ts"],
+  "exclude": ["node_modules"],
 }
