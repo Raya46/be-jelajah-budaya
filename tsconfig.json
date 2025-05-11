@@ -10,7 +10,7 @@
     "rootDir": "./",
 
     // Bundler mode
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "verbatimModuleSyntax": true,
     "noEmit": false,
 
@@ -24,6 +24,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*", "./apis/*.ts"],
+  "include": ["src/**/*", "./api/*.ts"],
   "exclude": ["node_modules"],
 }
