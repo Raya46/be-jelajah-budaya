@@ -1,7 +1,6 @@
 {
   "name": "be-jelajah-budaya",
-  "module": "index.ts",
-  "type": "module",
+  "type": "commonjs",
   "prisma": {
     "schema": "prisma/schema.prisma",
     "seed": "node --loader ts-node/esm prisma/seed.ts"
@@ -46,14 +45,14 @@
   },
   "version": "1.0.0",
   "description": "To install dependencies:",
-  "main": "index.js",
+  "main": "src/server.ts",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "bun run ./src/index.ts",
-    "dev": "bun --watch ./src/index.ts",
+    "start": "bun run ./src/server.ts",
+    "dev": "bun --watch ./src/server.ts",
     "build": "tsc",
     "postinstall": "prisma generate"
   },

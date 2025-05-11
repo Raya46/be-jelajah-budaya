@@ -1,5 +1,3 @@
-import serverless from 'serverless-http'
-import app from "../src/index"
-import swaggerDefinition from './docs/app'
+import app from "../src/app";
 
-export default serverless(app)
+export default app;

@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "installCommand": "bun install",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "functions": { "api/index.ts": { "maxDuration": 60 } }
 }
