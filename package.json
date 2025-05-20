@@ -3,7 +3,7 @@
   "type": "commonjs",
   "prisma": {
     "schema": "prisma/schema.prisma",
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@prisma/client": "^6.5.0",
