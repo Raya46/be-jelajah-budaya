@@ -54,7 +54,7 @@
     "start": "bun run ./src/server.ts",
     "dev": "bun --watch ./src/server.ts",
     "build": "tsc",
-    "postinstall": "prisma generate && prisma db push &&prisma db seed"
+    "postinstall": "prisma generate && prisma db push && prisma db seed"
   },
   "repository": {
     "type": "git",
